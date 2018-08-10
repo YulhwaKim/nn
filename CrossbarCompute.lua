@@ -53,7 +53,7 @@ function CrossbarCompute:updateOutput(input)
 	self.weightB = self:binarized()
 	self.weight:copy(self.weightB)
 	-- update Output
-	input.THNN.crossbarCompute_updateOutput(
+	input.THNN.CrossbarCompute_updateOutput(
 		self.output:cdata(),
 		input:cdata(),
 		self.weight:cdata(),

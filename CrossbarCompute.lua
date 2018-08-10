@@ -1,8 +1,8 @@
 local THNN = require 'nn.THNN'
-local crossbarCompute, parent = torch.class('nn.crossbarCompute', 'nn.Linear')
+local CrossbarCompute, parent = torch.class('nn.CrossbarCompute', 'nn.Linear')
 
 
-function crossbarCompute:__init(inputSize, outputSize)
+function CrossbarCompute:__init(inputSize, outputSize)
    local delayedReset = self.reset
    self.reset = function() end
    parent.__init(self, inputSize, outputSize)
@@ -19,7 +19,7 @@ function crossbarCompute:__init(inputSize, outputSize)
    self.reset = nil
 end
 
-function crossbarCompute:reset(stdv)
+function CrossbarCompute:reset(stdv)
    if stdv then
       stdv = stdv * math.sqrt(3)
    else
@@ -41,14 +41,14 @@ function crossbarCompute:reset(stdv)
 end
 
 
-function crossbarCompute:binarized()
+function CrossbarCompute:binarized()
 	self.weightOrg:copy(self.weight)
 	self.weightB:copy(self.weight):add(1):div(2):clamp(0,1)
 	self.weightB:round():mul(2):add(-1)
 	return  self.weightB
 end
 
-function crossbarCompute:updateOutput(input)
+function CrossbarCompute:updateOutput(input)
 	-- get binary weight
 	self.weightB = self:binarized()
 	self.weight:copy(self.weightB)
@@ -64,7 +64,7 @@ function crossbarCompute:updateOutput(input)
 end
 
 
-function crossbarCompute:__tostring__()
+function CrossbarCompute:__tostring__()
   return torch.type(self) ..
       string.format('(%d -> %d)', self.weight:size(2), self.weight:size(1))
 end

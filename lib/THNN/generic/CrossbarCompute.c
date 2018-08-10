@@ -24,7 +24,7 @@ void THNN_(CrossbarCompute_updateOutput)(
 {
 	long dim = THTensor_(nDimension)(input);
 	if (dim == 1) {
-
+		THError("Lazy Yulhwa did not prepare for the case that the dimension of input is 1!");
 	}
 	else if (dim == 2){
 		// get parameters

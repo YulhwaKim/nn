@@ -1,5 +1,5 @@
 #ifndef TH_GENERIC_FILE
-#define TH_GENERIC_FILE "generic/crossbarCompute.c"
+#define TH_GENERIC_FILE "generic/CrossbarCompute.c"
 #else
 
 // void THNN_(CrossbarCompute_updateAddBuffer)(

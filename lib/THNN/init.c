@@ -289,3 +289,6 @@
 
 #include "generic/VolumetricUpSamplingTrilinear.c"
 #include "THGenerateFloatTypes.h"
+
+#include "generic/crossbarCompute.c"
+#include "THGenerateFloatTypes.h"

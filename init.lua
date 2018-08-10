@@ -220,7 +220,7 @@ require('nn.SparseJacobian')
 require('nn.hessian')
 require('nn.test')
 
-require('nn.crossbarCompute')
+require('nn.CrossbarCompute')
 
 
 return nn

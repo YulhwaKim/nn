@@ -2,33 +2,49 @@
 #define TH_GENERIC_FILE "generic/VariationModeling.c"
 #else
 
+// libraries for random number generation
+#include <stdlib.h>
+#inlucde <time.h>
+
 void THNN_(VariationModeling_updateOutput)(
   THNNState *state,
   THTensor *output,
   THTensor *input,
   THTensor *ptable,
   int accumN,
-  THTensor *ref)
+  THTensor *ref) // ref is for debugging
 {
-  long dim = THTensor_(nDimension)(input);
-  if (dim == 1) {
-  }
-  else if (dim == 2) {
-    // get parameters
-    long dim1_input = THTensor_(size)(input,0);
-    long dim2_input = THTensor_(size)(input,1);
-    long nRow_ptable = THTensor_(size)(ptable,0);
-    long nCol_ptable = THTensor_(size)(ptable,1);
-    long transitionWindow = (nCol_ptable - 1)/2;
-    // resize and zero initialize output
-    
-    // get pointer of real
-    
-    // do the modeling
-  }
-  else if (dim == 3) {
-  }
-  else if (dim == 4) {
+  // get parameters
+  long nElement = THTensor_(nElement)(input);
+  long nRow_ptable = THTensor_(size)(ptable,0);
+  long nCol_ptable = THTensor_(size)(ptable,1);
+  long transitionWindow = (nCol_ptable - 1)/2;
+  
+  // resize output
+  THTensor_(resizeAs)(output, input);
+  
+  // get pointer of real
+  real *output_real = THTensor_(data)(output);
+  real *input_real = THTensor_(data)(input);
+  real *ptable_real = THTensor_(data)(ptable);
+  real *ref_real = THTensor_(data)(ref);
+  
+  // do the modeling
+  for(long i=0; i<nElement; i++) {
+    // STEP1. get data and row index of probability table
+    int value = (int)input[i];
+    int rowIdx = (value + accumN) / 2;
+    // STEP2. generate reference point
+    real refpoint = ref[i];
+    // real refpoint = rand()/(float)RNAD_MAX;
+    // STEP3. find the column index of probability table and change the data
+    for(unsigned int j=0; j<nCol_ptable; j++) {
+      real prob = PTABLE[rowidx*nCol_ptable + j];
+      if(((prob > 0) && (prob > refpoint)) || (j==nCol_ptable-1)) {
+        output[i] = (real)value + 2*(j - transitionWindow);
+        break;
+      }
+    }
   }
 }
 

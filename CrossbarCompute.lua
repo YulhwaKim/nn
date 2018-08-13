@@ -50,8 +50,8 @@ end
 
 function CrossbarCompute:updateOutput(input)
 	-- get binary weight
-	self.weightB = self:binarized()
-	self.weight:copy(self.weightB)
+-- 	self.weightB = self:binarized()
+-- 	self.weight:copy(self.weightB)
 	-- update Output
 	input.THNN.CrossbarCompute_updateOutput(
 		self.output:cdata(),
@@ -59,7 +59,7 @@ function CrossbarCompute:updateOutput(input)
 		self.weight:cdata(),
 		self.accumN)
 	-- restore original weight
-	self.weight:copy(self.weightOrg);
+-- 	self.weight:copy(self.weightOrg);
 	return self.output
 end
 

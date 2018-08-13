@@ -56,8 +56,8 @@ void THNN_(CrossbarCompute_updateOutput)(
 					// THTensor temp = 0;
 					real temp = 0;
 					for(long n=0; n<accumN; n++) {
-						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[0];
-// 						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[j*nIn+(k*accumN+n)];
+// 						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[0];
+						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[j*nIn+(k*accumN+n)];
 // 						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[(k*accumN+n)*nOut+j];
 					}
 					// update result

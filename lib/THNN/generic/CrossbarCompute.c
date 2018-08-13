@@ -2,8 +2,6 @@
 #define TH_GENERIC_FILE "generic/CrossbarCompute.c"
 #else
 
-#include <stdio.h>
-
 // void THNN_(CrossbarCompute_updateAddBuffer)(
 // 	THNNState *state,
 // 	THTensor *input,
@@ -58,8 +56,6 @@ void THNN_(CrossbarCompute_updateOutput)(
 					// THTensor temp = 0;
 					real temp = 0;
 					for(long n=0; n<accumN; n++) {
-						printf("i: %ld j: %ld, k: %ld, n: %ld, accumN: %d, idx: %ld", 
-						       i, j, k, n, accumN, j*nIn+(k*accumN+n));
 						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[j*nIn+(k*accumN+n)];
 // 						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[(k*accumN+n)*nOut+j];
 					}

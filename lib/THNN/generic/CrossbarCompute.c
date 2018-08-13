@@ -2,6 +2,8 @@
 #define TH_GENERIC_FILE "generic/CrossbarCompute.c"
 #else
 
+#include <stdio.h>
+
 // void THNN_(CrossbarCompute_updateAddBuffer)(
 // 	THNNState *state,
 // 	THTensor *input,

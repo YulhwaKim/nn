@@ -41,10 +41,13 @@ void THNN_(CrossbarCompute_updateOutput)(
 		if (THTensor_(nElement)(output) != nElement) {
 			THTensor_(zero)(output);
 		}
+		// transpose weight
+		THTensor *tweight = THTensor_(new)();
+		THTensor_(transpose)(tweight,weight,0,1);
 		// get pointer of real
 		real *output_real = THTensor_(data)(output);
 		real *input_real = THTensor_(data)(input);
-		real *weight_real = THTensor_(data)(weight);
+		real *weight_real = THTensor_(data)(tweight);
 		// do the computation
 		for(long i=0; i<nframe ; i++) {
 			for(long j=0; j<nOut ; j++) {
@@ -60,6 +63,8 @@ void THNN_(CrossbarCompute_updateOutput)(
 				}
 			}
 		}
+		// free tweight
+		THTensor_(free)(tweight);
 	}
 }
 

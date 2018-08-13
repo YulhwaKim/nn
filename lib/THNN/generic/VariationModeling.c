@@ -4,7 +4,7 @@
 
 // libraries for random number generation
 #include <stdlib.h>
-#inlucde <time.h>
+#include <time.h>
 
 void THNN_(VariationModeling_updateOutput)(
   THNNState *state,

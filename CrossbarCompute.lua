@@ -14,6 +14,7 @@ function CrossbarCompute:__init(inputSize, outputSize)
    self.gradWeight = torch.Tensor(outputSize, inputSize)
    self.gradBias = torch.Tensor(outputSize)
    self.accumN = inputSize
+   self.binarize = true
    self:reset()
    -- should nil for serialization, the reset will still work
    self.reset = nil
@@ -50,8 +51,10 @@ end
 
 function CrossbarCompute:updateOutput(input)
 	-- get binary weight
--- 	self.weightB = self:binarized()
--- 	self.weight:copy(self.weightB)
+	if self.binarize == true then
+		self.weightB = self:binarized()
+		self.weight:copy(self.weightB)
+	end
 	-- update Output
 	input.THNN.CrossbarCompute_updateOutput(
 		self.output:cdata(),
@@ -59,7 +62,9 @@ function CrossbarCompute:updateOutput(input)
 		self.weight:cdata(),
 		self.accumN)
 	-- restore original weight
--- 	self.weight:copy(self.weightOrg);
+	if self.binarize == true then
+		self.weight:copy(self.weightOrg);
+	end
 	return self.output
 end
 

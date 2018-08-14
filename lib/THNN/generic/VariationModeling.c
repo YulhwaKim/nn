@@ -32,16 +32,16 @@ void THNN_(VariationModeling_updateOutput)(
   // do the modeling
   for(long i=0; i<nElement; i++) {
     // STEP1. get data and row index of probability table
-    int value = (int)input[i];
+    int value = (int)input_real[i];
     int rowIdx = (value + accumN) / 2;
     // STEP2. generate reference point
-    real refpoint = ref[i];
+    real refpoint = ref_real[i];
     // real refpoint = rand()/(float)RNAD_MAX;
     // STEP3. find the column index of probability table and change the data
     for(unsigned int j=0; j<nCol_ptable; j++) {
-      real prob = PTABLE[rowIdx*nCol_ptable + j];
+      real prob = ptable_real[rowIdx*nCol_ptable + j];
       if(((prob > 0) && (prob > refpoint)) || (j==nCol_ptable-1)) {
-        output[i] = (real)value + 2*(j - transitionWindow);
+        output_real[i] = (real)value + 2*(j - transitionWindow);
         break;
       }
     }

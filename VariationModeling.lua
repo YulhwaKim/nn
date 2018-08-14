@@ -16,6 +16,6 @@ function VariationModeling:updateOutput(input)
 		input:cdata(),
 		self.ptable:cdata(),
 		self.accumN,
-		self.ref)
+		self.ref:cdata())
 	return self.output
 end

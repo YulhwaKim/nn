@@ -39,7 +39,7 @@ void THNN_(VariationModeling_updateOutput)(
     // real refpoint = rand()/(float)RNAD_MAX;
     // STEP3. find the column index of probability table and change the data
     for(unsigned int j=0; j<nCol_ptable; j++) {
-      real prob = PTABLE[rowidx*nCol_ptable + j];
+      real prob = PTABLE[rowIdx*nCol_ptable + j];
       if(((prob > 0) && (prob > refpoint)) || (j==nCol_ptable-1)) {
         output[i] = (real)value + 2*(j - transitionWindow);
         break;

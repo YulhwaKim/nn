@@ -29,6 +29,10 @@ void THNN_(VariationModeling_updateOutput)(
   real *ptable_real = THTensor_(data)(ptable);
   real *ref_real = THTensor_(data)(ref);
   
+  long nRef = THTensor_(nElement)(ref);
+  printf("accumN: %d\n", accumN);
+  printf("input: %ld; ref: %ld\n", nElement, nRef);
+  
   // do the modeling
   printf("test\n");
   for(long i=0; i<nElement; i++) {

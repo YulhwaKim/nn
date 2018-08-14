@@ -11,7 +11,7 @@ end
 
 function VariationModeling:updateOutput(input)
 	-- update Output
-	void THNN_(VariationModeling_updateOutput)(
+	input.THNN.VariationModeling_updateOutput(
 		self.output:cdata(),
 		input:cdata(),
 		self.ptable:cdata(),

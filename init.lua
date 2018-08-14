@@ -221,6 +221,7 @@ require('nn.hessian')
 require('nn.test')
 
 require('nn.CrossbarCompute')
+require('nn.VariationModeling')
 
 
 return nn

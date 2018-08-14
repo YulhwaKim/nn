@@ -2,7 +2,7 @@ local THNN = require 'nn.THNN'
 local CrossbarCompute, parent = torch.class('nn.CrossbarCompute', 'nn.Linear')
 
 
-function CrossbarCompute:__init(inputSize, outputSize)
+function CrossbarCompute:__init(inputSize, outputSize, accumN)
    local delayedReset = self.reset
    self.reset = function() end
    parent.__init(self, inputSize, outputSize)

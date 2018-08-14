@@ -30,7 +30,7 @@ void THNN_(VariationModeling_updateOutput)(
   real *ref_real = THTensor_(data)(ref);
   
   // do the modeling
-  printf('test\n');
+  printf("test\n");
   for(long i=0; i<nElement; i++) {
     // STEP1. get data and row index of probability table
     int value = (int)input_real[i];

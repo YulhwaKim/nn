@@ -1622,4 +1622,12 @@ TH_API void THNN_(CrossbarCompute_updateOutput)(
 	THTensor *weight,
 	int accumN);
 
+TH_API void THNN_(VariationModeling_updateOutput)(
+  	THNNState *state,
+  	THTensor *output,
+  	THTensor *input,
+  	THTensor *ptable,
+  	int accumN,
+  	THTensor *ref);
+
 #endif

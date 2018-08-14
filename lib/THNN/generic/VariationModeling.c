@@ -29,25 +29,25 @@ void THNN_(VariationModeling_updateOutput)(
   real *ptable_real = THTensor_(data)(ptable);
   real *ref_real = THTensor_(data)(ref);
   
-  long nRef = THTensor_(nElement)(ref);
-  printf("accumN: %d\n", accumN);
-  printf("input: %ld; ref: %ld\n", nElement, nRef);
+//   long nRef = THTensor_(nElement)(ref);
+//   printf("accumN: %d\n", accumN);
+//   printf("input: %ld; ref: %ld\n", nElement, nRef);
   
   // do the modeling
   printf("test\n");
   for(long i=0; i<nElement; i++) {
     // STEP1. get data and row index of probability table
-    printf("test i: %ld\n", i);
+//     printf("test i: %ld\n", i);
     int value = (int)input_real[i];
-    printf("I got value\n");
+//     printf("I got value\n");
     int rowIdx = (value + accumN) / 2;
     // STEP2. generate reference point
     real refpoint = ref_real[i];
-    printf("I got ref\n");
+//     printf("I got ref\n");
     // real refpoint = rand()/(float)RNAD_MAX;
     // STEP3. find the column index of probability table and change the data
     for(unsigned int j=0; j<nCol_ptable; j++) {
-      printf("test j: %d\n", j);
+//       printf("test j: %d\n", j);
       real prob = ptable_real[rowIdx*nCol_ptable + j];
       if(((prob > 0) && (prob > refpoint)) || (j==nCol_ptable-1)) {
         output_real[i] = (real)value + 2*(j - transitionWindow);

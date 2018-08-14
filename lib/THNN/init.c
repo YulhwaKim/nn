@@ -292,3 +292,6 @@
 
 #include "generic/CrossbarCompute.c"
 #include "THGenerateFloatTypes.h"
+
+#include "generic/VariationModeling.c"
+#include "THGenerateFloatTypes.h"

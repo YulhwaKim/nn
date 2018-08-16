@@ -56,6 +56,47 @@ static THTensor *THNN_(view_weight_Cross2d)(THTensor *weight){
   return weight;
 }
 
-
+static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
+  THTensor *input,
+  THTensor *output,
+  THTensor *weight,
+  THTensor *finput,
+  int accumN,
+  int nPsum,
+  int kW,
+  int kH,
+  int dW,
+  int dH,
+  int padW,
+  int padH,
+  long nInputPlane,
+  long inputWidth,
+  long inputHeight,
+  long nOutputPlane,
+  long outputWidth,
+  long outputHeight)
+{
+  long i;
+  THTensor *output2d;
+  
+  // Lowering convolution
+  THNN_(unfolded_copy)(finput, input, kW, kH, dW, dH, padW, padH,
+                       nInputPlane, inputWidth, inputHeight,
+                       outputWidth, outputHeight);
+  
+  // Initialize output
+  output3d = THTensor_(newWithStorage3d)(output->storage, output->storageOffset,
+                                         nOutputPlane, -1,
+                                         outputHeight*outputWidth, -1,
+                                         nPsum, -1);
+  THTensor_(zero)(output);
+  
+  // do the computation
+  
+  
+  // free output3d
+  THTensor_(free)(output3d);
+}
+      
 
 

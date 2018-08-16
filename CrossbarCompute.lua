@@ -1,5 +1,5 @@
 local THNN = require 'nn.THNN'
-local CrossbarCompute, parent = torch.class('nn.CrossbarCompute', 'nn.Linear')
+local CrossbarCompute, parent = torch.class('nn.CrossbarCompute', 'nn.Module')
 
 
 function CrossbarCompute:__init(inputSize, outputSize, accumN)
@@ -10,7 +10,6 @@ function CrossbarCompute:__init(inputSize, outputSize, accumN)
    self.weight = torch.Tensor(outputSize, inputSize)
    self.weightB = torch.Tensor(outputSize, inputSize)
    self.weightOrg = torch.Tensor(outputSize, inputSize)
-   self.bias = torch.Tensor(outputSize)
    self.gradWeight = torch.Tensor(outputSize, inputSize)
    self.gradBias = torch.Tensor(outputSize)
    self.accumN = inputSize
@@ -31,11 +30,9 @@ function CrossbarCompute:reset(stdv)
          self.weight:select(1, i):apply(function()
             return torch.uniform(-1, 1)
          end)
-         self.bias[i] = torch.uniform(-stdv, stdv)
       end
    else
       self.weight:uniform(-1, 1)
-      self.bias:uniform(-stdv, stdv)
    end
 
    return self

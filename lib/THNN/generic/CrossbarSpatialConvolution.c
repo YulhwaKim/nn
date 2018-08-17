@@ -118,5 +118,4 @@ static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
   THTensor_(free)(output3d);
 }
       
-
-
+#endif

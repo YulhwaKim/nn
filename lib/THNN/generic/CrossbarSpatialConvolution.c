@@ -179,12 +179,25 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
     THTensor_(resize4d)(output, T, nOutputPlane, outputHeight, outputWidth);
     
 #pragma omp parallel for private(t)
-    for () {
+    for (t = 0; t < T; t++) {
+      THTensor *input_t = THTensor_(newSelect)(input, 0, t);
+      THTensor *output_t = THTensor_(newSelect)(output, 0, t);
+      THTensor *finput_t = THTensor_(newSelect)(finput, 0, t);
+      
+      THNN_(CrossbarSpatialConvolution_updateOutput_frame)
+      (input_t, output_t, weight, finput_t, accumN, nPsum,
+       kW, kH, dW, dH, padW, padH,
+       nInputPlane, inputWidth, inputHeight,
+       nOutputPlane, outputWidth, outputHeight);
+      
+      THTensor_(free)(input_t);
+      THTensor_(free)(output_t);
+      THTensor_(free)(finput_t);
     }
   }
-
-    
+  
   THTensor_(free)(input);
+  THTensor_(free)(weight);
 }
 
       

@@ -96,7 +96,7 @@ static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
   real *weight_real = THTensor_(data)(weight);
   
   // get parameters
-  long nIn = nInputPlane * inputWidht * inputHeight;
+  long nIn = nInputPlane * inputWidth * inputHeight;
   long nOutSpatial = outputHeight * outputWidth;
   
   // do the computation
@@ -106,7 +106,7 @@ static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
         // do the accumulation
         real temp = 0;
         for (long n=0; n<accumN; n++) {
-          temp += finput_real[] * weight_real[];
+          temp += finput_real[(k*accumN+n)*nOutSpatial+j] * weight_real[i*nIn+(k*accumN+n)];
         }
         // update result
         output3d_real[i*(nOutSpatial*nPsum)+j*Psum+k] = temp;

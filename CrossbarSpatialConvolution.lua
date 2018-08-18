@@ -59,7 +59,7 @@ function CrossbarSpatialConvolution:updateOutput(input)
 		self.weight:copy(self.weightB)
 	end
    
---    assert(input.THNN, torch.type(input)..'.THNN backend not imported')
+   assert(input.THNN, torch.type(input)..'.THNN backend not imported')
    self.finput = self.finput or input.new()
    self.fgradInput = self.fgradInput or input.new()
    -- backward compatibility

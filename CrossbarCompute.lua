@@ -2,7 +2,7 @@ local THNN = require 'nn.THNN'
 local CrossbarCompute, parent = torch.class('nn.CrossbarCompute', 'nn.Module')
 
 
-function CrossbarCompute:__init(inputSize, outputSize, accumN)
+function CrossbarCompute:__init(inputSize, outputSize, accumN, binarize)
    local delayedReset = self.reset
    self.reset = function() end
    parent.__init(self, inputSize, outputSize)
@@ -13,7 +13,7 @@ function CrossbarCompute:__init(inputSize, outputSize, accumN)
    self.gradWeight = torch.Tensor(outputSize, inputSize)
    self.gradBias = torch.Tensor(outputSize)
    self.accumN = accumN or inputSize
-   self.binarize = true
+   self.binarize = binarize or true
    self:reset()
    -- should nil for serialization, the reset will still work
    self.reset = nil

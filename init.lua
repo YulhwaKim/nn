@@ -222,6 +222,7 @@ require('nn.test')
 
 require('nn.CrossbarCompute')
 require('nn.VariationModeling')
+require('nn.CrossbarSpatialConvolution')
 
 
 return nn

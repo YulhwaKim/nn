@@ -295,3 +295,6 @@
 
 #include "generic/VariationModeling.c"
 #include "THGenerateFloatTypes.h"
+
+#include "generic/CrossbarSpatialConvolution.c"
+#include "THGenerateFloatTypes.h"

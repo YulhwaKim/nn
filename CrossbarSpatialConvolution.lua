@@ -54,10 +54,10 @@ end
 
 function CrossbarSpatialConvolution:updateOutput(input)
    -- get binary weight
-	if self.binarize == true then
-		self.weightB = self:binarized()
-		self.weight:copy(self.weightB)
-	end
+   if self.binarize == true then
+	self.weightB = self:binarized()
+	self.weight:copy(self.weightB)
+   end
    
    assert(input.THNN, torch.type(input)..'.THNN backend not imported')
    self.finput = self.finput or input.new()
@@ -79,6 +79,10 @@ function CrossbarSpatialConvolution:updateOutput(input)
       self.dW, self.dH,
       self.padW, self.padH
    )
+   -- restore original weight
+   if self.binarize == true then
+	self.weight:copy(self.weightOrg);
+   end
    return self.output
 end
 

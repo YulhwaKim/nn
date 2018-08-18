@@ -1630,4 +1630,17 @@ TH_API void THNN_(VariationModeling_updateOutput)(
   	int accumN,
   	THTensor *ref);
 
+TH_API void THNN_(CrossbarSpatialConvolution_updateOutput)(
+  	THNNState *state,
+  	THTensor *input,
+  	THTensor *output,
+  	THTensor *weight,
+  	THTensor *finput,
+  	int accumN,
+  	int kW, int kH,
+  	int dW, int dH,
+  	int padW, int padH,
+  	long inputWidth, long inputHeight,
+  	long outputWidth, long outputHeight);
+
 #endif

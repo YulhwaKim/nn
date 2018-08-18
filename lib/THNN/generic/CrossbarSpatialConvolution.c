@@ -7,7 +7,7 @@ static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
   int kH, int kW, int dH, int dW, int padH, int padW) {
   
   THArgCheck(kW > 0 && kH > 0, 9,
-            "kernel size should be greater than zero, but got kH: %d kH: %d", kH, KW);
+            "kernel size should be greater than zero, but got kH: %d kH: %d", kH, kW);
   THArgCheck(dW > 0 && dH > 0, 11,
              "stride should be greater than zero, but got dH: %d dW: %d", dH, dW);
   THNN_ARGCHECK(weight->nDimension == 2, 5, weight, 

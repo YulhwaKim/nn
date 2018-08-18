@@ -74,7 +74,7 @@ function CrossbarSpatialConvolution:updateOutput(input)
       self.output:cdata(),
       self.weight:cdata(),
       self.finput:cdata(),
-      accumN,
+      self.accumN,
       self.kW, self.kH,
       self.dW, self.dH,
       self.padW, self.padH

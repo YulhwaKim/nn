@@ -1,7 +1,7 @@
 local THNN = require 'nn.THNN'
 local CrossbarSpatialConvolution, parent = torch.class('nn.CrossbarSpatialConvolution', 'nn.Module')
 
-function CrossbarSpatialConvolution:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, padW, padH, accumN, bianrize)
+function CrossbarSpatialConvolution:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, padW, padH, accumN, binarize)
    parent.__init(self)
 
    dW = dW or 1

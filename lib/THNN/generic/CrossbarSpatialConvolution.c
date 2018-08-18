@@ -126,9 +126,7 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
   int accumN,
   int kW, int kH,
   int dW, int dH,
-  int padW, int padH,
-  long inputWidth, long inputHeight,
-  long outputWidth, long outputHeight)
+  int padW, int padH)
 {
   weight = THNN_(view_weight_Cross2d)(weight);
   

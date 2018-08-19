@@ -35,6 +35,7 @@ void THNN_(VariationModeling_updateOutput)(
   
   // do the modeling
 //   printf("test\n");
+  srand(time(NULL));
   for(long i=0; i<nElement; i++) {
     // STEP1. get data and row index of probability table
 //     printf("test i: %ld\n", i);

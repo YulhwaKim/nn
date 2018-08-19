@@ -22,7 +22,7 @@ function CrossbarSpatialConvolution:__init(nInputPlane, nOutputPlane, kW, kH, dW
    self.weightOrg = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
    self.accumN = accumN or inputSize
    
-   self.binarize = binarize or true
+   self.binarize = binarize
    
    self:reset()
 end
@@ -68,8 +68,6 @@ function CrossbarSpatialConvolution:updateOutput(input)
       self.padH = self.padding
       self.padding = nil
    end
-   print('before backend: weight')
-   print(weight)
    -- update output
    input.THNN.CrossbarSpatialConvolution_updateOutput(
       input:cdata(),
@@ -81,8 +79,6 @@ function CrossbarSpatialConvolution:updateOutput(input)
       self.dW, self.dH,
       self.padW, self.padH
    )
-   print('after backend: weight')
-   print(weight)
    -- restore original weight
    if self.binarize == true then
 	self.weight:copy(self.weightOrg);

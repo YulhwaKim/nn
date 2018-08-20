@@ -14,12 +14,12 @@ void THNN_(VariationModeling_updateOutput)(
   int accumN)
 //   THTensor *ref) // ref is for debugging
 {
-  printf("\nVariationModeling_updateoutput starts!\n");
+//   printf("\nVariationModeling_updateoutput starts!\n");
   // get parameters
   long nElement = THTensor_(nElement)(input);
   long nRow_ptable = THTensor_(size)(ptable,0);
   long nCol_ptable = THTensor_(size)(ptable,1);
-  printf("nRow_ptable: %ld, nCol_ptable: %ld\n", nRow_ptable, nCol_ptable);
+//   printf("nRow_ptable: %ld, nCol_ptable: %ld\n", nRow_ptable, nCol_ptable);
   long transitionWindow = (nCol_ptable - 1)/2;
   
   // resize output
@@ -54,8 +54,8 @@ void THNN_(VariationModeling_updateOutput)(
       real prob = ptable_real[rowIdx*nCol_ptable + j];
       if(((prob > 0) && (prob > refpoint)) || (j==nCol_ptable-1)) {
         output_real[i] = (real)value + 2*(j - transitionWindow);
-        printf("value: %d, refpoint: %.2f, output: %.1f, table row: %d, table col: %d, prob: %.2f\n", 
-               value, refpoint, output_real[i], rowIdx, j, prob);
+//         printf("value: %d, refpoint: %.2f, output: %.1f, table row: %d, table col: %d, prob: %.2f\n", 
+//                value, refpoint, output_real[i], rowIdx, j, prob);
         break;
       }
     }

@@ -111,6 +111,7 @@ static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
         }
         // update result
         output3d_real[i*(nOutSpatial*nPsum)+j*nPsum+k] = temp;
+        print(temp: %.1f, output3d_real: %.1f \n", temp, output3d_real[i*(nOutSpatial*nPsum)+j*nPsum+k]");
       }
     }
   }

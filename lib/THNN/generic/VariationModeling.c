@@ -18,6 +18,7 @@ void THNN_(VariationModeling_updateOutput)(
   long nElement = THTensor_(nElement)(input);
   long nRow_ptable = THTensor_(size)(ptable,0);
   long nCol_ptable = THTensor_(size)(ptable,1);
+  printf("nRow_ptable: %ld, nCol_ptable: %ld\n", nRow_ptable, nCol_ptable);
   long transitionWindow = (nCol_ptable - 1)/2;
   
   // resize output

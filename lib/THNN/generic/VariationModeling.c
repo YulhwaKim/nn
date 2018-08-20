@@ -37,6 +37,9 @@ void THNN_(VariationModeling_updateOutput)(
   
   // do the modeling
 //   printf("test\n");
+  int step = 2;
+  if (accumN == 1)
+    step = 1;
   srand(time(NULL));
   for(long i=0; i<nElement; i++) {
     // STEP1. get data and row index of probability table
@@ -53,7 +56,7 @@ void THNN_(VariationModeling_updateOutput)(
 //       printf("test j: %d\n", j);
       real prob = ptable_real[rowIdx*nCol_ptable + j];
       if(((prob > 0) && (prob > refpoint)) || (j==nCol_ptable-1)) {
-        output_real[i] = (real)value + 2*(j - transitionWindow);
+        output_real[i] = (real)value + step*(j - transitionWindow);
 //         printf("value: %d, refpoint: %.2f, output: %.1f, table row: %d, table col: %d, prob: %.2f\n", 
 //                value, refpoint, output_real[i], rowIdx, j, prob);
         break;

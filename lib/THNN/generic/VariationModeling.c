@@ -48,6 +48,7 @@ void THNN_(VariationModeling_updateOutput)(
 //     real refpoint = ref_real[i];
 //     printf("I got ref\n");
     real refpoint = rand()/(real)RAND_MAX;
+    printf("value: %d, refpoint: %.2f\n", value, refpoint);
     // STEP3. find the column index of probability table and change the data
     for(unsigned int j=0; j<nCol_ptable; j++) {
 //       printf("test j: %d\n", j);

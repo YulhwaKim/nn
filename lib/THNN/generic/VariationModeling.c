@@ -14,6 +14,7 @@ void THNN_(VariationModeling_updateOutput)(
   int accumN)
 //   THTensor *ref) // ref is for debugging
 {
+  printf("\nVariationModeling_updateoutput starts!\n");
   // get parameters
   long nElement = THTensor_(nElement)(input);
   long nRow_ptable = THTensor_(size)(ptable,0);

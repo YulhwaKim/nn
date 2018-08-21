@@ -13,7 +13,10 @@ function CrossbarCompute:__init(inputSize, outputSize, accumN, binarize)
    self.gradWeight = torch.Tensor(outputSize, inputSize)
    self.gradBias = torch.Tensor(outputSize)
    self.accumN = accumN or inputSize
-   self.binarize = binarize
+   self.binarize = binarize or false
+	if (binarize and type(self.binarize ~= 'boolean') then
+		error('binarize flag must be boolean')
+	end
    self:reset()
    -- should nil for serialization, the reset will still work
    self.reset = nil

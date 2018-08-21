@@ -109,8 +109,8 @@ static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
           temp += finput_real[(k*accumN+n)*nOutSpatial+j] * weight_real[i*nIn+(k*accumN+n)];
           // debug weight index
 //           if ((i==0)) 
-            printf("idx nOutputPlane: %ld, idx nIn: %ld, nIn: %ld, idx linear: %ld,  weight: %.1f\n", 
-                  i, (k*accumN+n), nIn, i*nIn+(k*accumN+n), weight_real[i*nIn+(k*accumN+n)]);
+//             printf("idx nOutputPlane: %ld, idx nIn: %ld, nIn: %ld, idx linear: %ld,  weight: %.1f\n", 
+//                   i, (k*accumN+n), nIn, i*nIn+(k*accumN+n), weight_real[i*nIn+(k*accumN+n)]);
 //           printf("accumN: %d, n: %d, finput_real: %.1f, weight_real: %.1f, temp: %.1f\n", 
 //                  accumN, n, finput_real[(k*accumN+n)*nOutSpatial+j],weight_real[i*nIn+(k*accumN+n)], temp);
         }

@@ -95,7 +95,8 @@ static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
   real *weight_real = THTensor_(data)(weight);
   
   // get parameters
-  long nIn = nInputPlane * inputWidth * inputHeight;
+//   long nIn = nInputPlane * inputWidth * inputHeight;
+  long nIn = weight->size[1];
   long nOutSpatial = outputHeight * outputWidth;
   
   // do the computation

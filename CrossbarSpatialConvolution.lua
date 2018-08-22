@@ -23,7 +23,7 @@ function CrossbarSpatialConvolution:__init(nInputPlane, nOutputPlane, kW, kH, dW
    self.accumN = accumN or inputSize
    
    self.binarize = binarize or false 
-	if (binarize and type(self.binarize ~= 'boolean') then
+	if (binarize and type(self.binarize ~= 'boolean')) then
 		error('binarize flag must be boolean')
 	end
    

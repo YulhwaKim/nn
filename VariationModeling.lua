@@ -7,7 +7,7 @@ function VariationModeling:__init(accumN, ptable, ip)
 	self.accumN = accumN or 1
 	self.ptable = ptable or torch.ones(self.accumN+1, 1)
 -- 	self.ref = torch.Tensor(1,1) -- for debugging
-	self. inplace = ip or false
+	self.inplace = ip or false
 		if (ip and type(ip) ~= 'boolean') then
 			error('in-place flag must be boolean')
 		end

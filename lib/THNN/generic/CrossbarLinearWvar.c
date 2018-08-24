@@ -68,7 +68,7 @@ void THNN_(CrossbarLinearWvar_updateOutput)(
 						psum += temp;
 					}
 					// quantize psum
-					psum = (accumN ==1) round(psum) : round(psum/2)*2;
+					psum = (accumN ==1)? round(psum) : round(psum/2)*2;
 					// clamping
 					psum = (psum > accumN)? accumN : psum;
 					psum = (psum < (-1)*accumN)? (-1)*accumN : psum;

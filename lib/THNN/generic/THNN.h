@@ -1641,4 +1641,13 @@ TH_API void THNN_(CrossbarSpatialConvolution_updateOutput)(
   	int dW, int dH,
   	int padW, int padH);
 
+TH_API void THNN_(CrossbarLinearWvar_updateOutput)(
+	THNNState *state,
+	THTensor *output,
+	THTensor *input,
+	THTensor *weight,
+	THTensor *VarP,
+	THTensor *VarM,
+	int accumN)
+
 #endif

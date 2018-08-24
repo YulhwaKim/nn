@@ -1648,6 +1648,6 @@ TH_API void THNN_(CrossbarLinearWvar_updateOutput)(
 	THTensor *weight,
 	THTensor *VarP,
 	THTensor *VarM,
-	int accumN)
+	int accumN);
 
 #endif

@@ -2,7 +2,7 @@ local THNN = require 'nn.THNN'
 local CrossbarLinearWvar, parent = torch.class('nn.CrossbarLinearWvar', 'nn.Module')
 
 
-function CrossbarLinearWvar:__init(inputSize, outputSize, accumN, binarize)
+function CrossbarLinearWvar:__init(inputSize, outputSize, accumN)
    local delayedReset = self.reset
    self.reset = function() end
    parent.__init(self, inputSize, outputSize)

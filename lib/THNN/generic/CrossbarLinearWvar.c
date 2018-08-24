@@ -1,27 +1,26 @@
 #ifndef TH_GENERIC_FILE
-#define TH_GENERIC_FILE "generic/CrossbarCompute.c"
+#define TH_GENERIC_FILE "generic/CrossbarLinearWvar.c"
 #else
 
-// void THNN_(CrossbarCompute_updateAddBuffer)(
-// 	THNNState *state,
-// 	THTensor *input,
-// 	THTensor *addBuffer) 
-// {
-// 	long nframe = THTensor_(size)(input,0);
-// 	long nElement = THTensor_(nElement)(addBuffer);
-// 	if (nElement != nframe) {
-// 		THTensor_(resize1d)(addBuffer,nframe);
-// 		THTensor_(fill)(addBuffer,1.0);
-// 	}
-// } 
+#include <math.h>
 
-void THNN_(CrossbarCompute_updateOutput)(
+void THNN_(CrossbarLinearWvar_updateOutput)(
 	THNNState *state,
 	THTensor *output,
 	THTensor *input,
 	THTensor *weight,
+	THTensor *VarP,
+	THTensor *VarM,
 	int accumN)
 {
+	// check if every weight has VarP and VarM
+	THArgCheck((THTensor_(nElement)(weight) == THTensor_(nElement)(VarP)) && 
+		   (THTensor_(nElement)(weight) == THTensor_(nElement)(VarM)), 102,
+			"nElement of weight and VarP / VarM should be the same, but weight: %d VarP: %d, VarM: %d", 
+		    THTensor_(nElement)(weight), 
+		    THTensor_(nElement)(VarP),
+		    THTensor_(nElement)(VarM));
+	
 	long dim = THTensor_(nDimension)(input);
 	if (dim == 1) {
 		THError("Lazy Yulhwa did not prepare for the case that the dimension of input is 1!");
@@ -37,36 +36,49 @@ void THNN_(CrossbarCompute_updateOutput)(
 		THArgCheck(nPsum * accumN == nIn, 101,
 			"nIn should be divisible by accumN, but got nIn: %d accumN: %d", nIn, accumN);
 		// resize and zero initialize output
-		THTensor_(resize3d)(output, nframe, nOut, nPsum);
+		THTensor_(resize2d)(output, nframe, nOut);
 		if (THTensor_(nElement)(output) != nElement) {
 			THTensor_(zero)(output);
 		}
-		// transpose weight
-// 		THTensor *tweight = THTensor_(new)();
-// 		THTensor_(transpose)(tweight,weight,0,1);
 		// get pointer of real
 		real *output_real = THTensor_(data)(output);
 		real *input_real = THTensor_(data)(input);
 		real *weight_real = THTensor_(data)(weight);
+		real *VarP_real = THTensor_(data)(VarP);
+		real *VarM_real = THTensor_(data)(VarM);
 		// do the computation
 		for(long i=0; i<nframe ; i++) {
 			for(long j=0; j<nOut ; j++) {
+				real output_temp = 0;
 				for(long k=0; k<nPsum ; k++) {
 					// do the accumulation
-					// THTensor temp = 0;
-					real temp = 0;
+					real psum = 0;
 					for(long n=0; n<accumN; n++) {
-// 						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[0];
-						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[j*nIn+(k*accumN+n)];
-// 						temp += input_real[i*nIn+(k*accumN+n)] * weight_real[(k*accumN+n)*nOut+j];
+						// multiplication
+						real temp = input_real[i*nIn+(k*accumN+n)] * weight_real[j*nIn+(k*accumN+n)];
+						// variation modeling
+						if (temp > 0)
+							temp = temp + VarP_real[j*nIn+(k*accumN+n)];
+						else if (temp < 0)
+							temp = temp + VarM_real[j*nIn+(k*accumN+n)];
+						else
+							THError("(-1,1) input x (-1, 1) weight has zero output!");
+						end
+						// accumulation
+						psum += temp;
 					}
-					// update result
-					output_real[i*(nOut*nPsum)+j*nPsum+k] = temp;
+					// quantize psum
+					psum = (accumN ==1) round(psum) : round(psum/2)*2;
+					// clamping
+					psum = (psum > accumN)? accumN : psum;
+					psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
+					// update output_temp
+					output_temp += psum;
 				}
+				// update output
+				output_real[i*nOut+j] = output_temp;
 			}
 		}
-		// free tweight
-// 		THTensor_(free)(tweight);
 	}
 }
 

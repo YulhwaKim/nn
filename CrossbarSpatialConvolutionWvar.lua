@@ -78,5 +78,6 @@ function CrossbarSpatialConvolutionWvar:__tostring__()
    if (self.padW or self.padH) and (self.padW ~= 0 or self.padH ~= 0) then
      s = s .. ', ' .. self.padW .. ',' .. self.padH
    end
+   s = s .. ', ' .. self.accumN
    return s .. ')'
 end

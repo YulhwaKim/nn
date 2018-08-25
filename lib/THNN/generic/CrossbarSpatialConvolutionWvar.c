@@ -1,9 +1,9 @@
 #ifndef TH_GENERIC_FILE
-#define TH_GENERIC_FILE "generic/CrossbarSpatialConvolution.c"
+#define TH_GENERIC_FILE "generic/CrossbarSpatialConvolutionWvar.c"
 #else
 
-static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
-  THTensor *input, THTensor *weight,
+static inline void THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)(
+  THTensor *input, THTensor *weight, THTensor *VarP, THTensor *VarM,
   int kH, int kW, int dH, int dW, int padH, int padW) {
   
   THArgCheck(kW > 0 && kH > 0, 9,
@@ -12,6 +12,14 @@ static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
              "stride should be greater than zero, but got dH: %d dW: %d", dH, dW);
   THNN_ARGCHECK(weight->nDimension == 2, 5, weight, 
                 "2D weight tensor expected, but got: %s");
+  // check if every weight has VarP and VarM
+	THArgCheck((THTensor_(nElement)(weight) == THTensor_(nElement)(VarP)) && 
+		         (THTensor_(nElement)(weight) == THTensor_(nElement)(VarM)), 102,
+			        "nElement of weight and VarP / VarM should be the same, but weight: %d VarP: %d, VarM: %d", 
+		          THTensor_(nElement)(weight), 
+		          THTensor_(nElement)(VarP),
+		          THTensor_(nElement)(VarM));
+  
   
   int ndim = input->nDimension;
   int dimf = 0;
@@ -56,11 +64,13 @@ static THTensor *THNN_(view_weight_Cross2d)(THTensor *weight){
   return weight;
 }
 
-static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
+static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
   THTensor *input,
   THTensor *output,
   THTensor *weight,
   THTensor *finput,
+  THTensor *VarP,
+  THTensor *VarM,
   int accumN,
   long nPsum,
   int kW,
@@ -84,45 +94,52 @@ static void THNN_(CrossbarSpatialConvolution_updateOutput_frame)(
                        outputWidth, outputHeight);
   
   // Initialize output
-  output3d = THTensor_(newWithStorage3d)(output->storage, output->storageOffset,
+  output3d = THTensor_(newWithStorage2d)(output->storage, output->storageOffset,
                                          nOutputPlane, -1,
-                                         outputHeight*outputWidth, -1,
-                                         nPsum, -1);
+                                         outputHeight*outputWidth, -1);
   
   // get pointer of real
-  real *output3d_real = THTensor_(data)(output3d);
+  real *output2d_real = THTensor_(data)(output2d);
   real *finput_real = THTensor_(data)(finput);
   real *weight_real = THTensor_(data)(weight);
+  real *VarP_real = THTensor_(data)(VarP);
+  real *VarM_real = THTensor_(data)(VarM);
   
   // get parameters
-//   long nIn = nInputPlane * inputWidth * inputHeight;
   long nIn = weight->size[1];
   long nOutSpatial = outputHeight * outputWidth;
   
   // do the computation
   for (long i=0; i<nOutputPlane; i++) {
     for (long j=0; j<nOutSpatial; j++) {
+      real output_temp = 0;
       for (long k=0; k<nPsum; k++) {
         // do the accumulation
-        real temp = 0;
+        real psum = 0;
         for (int n=0; n<accumN; n++) {
-          temp += finput_real[(k*accumN+n)*nOutSpatial+j] * weight_real[i*nIn+(k*accumN+n)];
-          // debug weight index
-//           if ((i==0)) 
-//             printf("idx nOutputPlane: %ld, idx nIn: %ld, nIn: %ld, idx linear: %ld,  weight: %.1f\n", 
-//                   i, (k*accumN+n), nIn, i*nIn+(k*accumN+n), weight_real[i*nIn+(k*accumN+n)]);
-//           printf("accumN: %d, n: %d, finput_real: %.1f, weight_real: %.1f, temp: %.1f\n", 
-//                  accumN, n, finput_real[(k*accumN+n)*nOutSpatial+j],weight_real[i*nIn+(k*accumN+n)], temp);
+          // multiplication
+          real temp = finput_real[(k*accumN+n)*nOutSpatial+j] * weight_real[i*nIn+(k*accumN+n)];
+          // variation modeling
+          temp = (temp > 0)? 
+                  temp + VarP_real[i*nIn+(k*accumN+n)] : temp + VarM_real[i*nIn+(k*accumN+n)];
+          // accumulation
+          psum += temp;
         }
-        // update result
-        output3d_real[i*(nOutSpatial*nPsum)+j*nPsum+k] = temp;
-//         printf("temp: %.1f, output3d_real: %.1f \n", temp, output3d_real[i*(nOutSpatial*nPsum)+j*nPsum+k]);
+        // quantize psum
+        psum = (accumN == 1)? round(psum) : round(psum/2)*2;
+        // clamping
+        psum = (psum > accumN)? accumN : psum;
+        psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
+        // update output_temp
+        output_temp += psum;
       }
+      // update result
+      output2d_real[i*nOutSpatial+j] = output_temp;
     }
   }
   
   // free output3d
-  THTensor_(free)(output3d);
+  THTensor_(free)(output2d);
 }
 
 void THNN_(CrossbarSpatialConvolution_updateOutput)(

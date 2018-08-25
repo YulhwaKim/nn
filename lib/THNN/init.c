@@ -301,3 +301,6 @@
 
 #include "generic/CrossbarLinearWvar.c"
 #include "THGenerateFloatTypes.h"
+
+#include "generic/CrossbarSpatialConvolutionWvar.c"
+#include "THGenerateFloatTypes.h"

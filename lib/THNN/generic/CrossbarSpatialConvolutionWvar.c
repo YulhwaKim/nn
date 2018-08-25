@@ -13,12 +13,12 @@ static inline void THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)(
   THNN_ARGCHECK(weight->nDimension == 2, 5, weight, 
                 "2D weight tensor expected, but got: %s");
   // check if every weight has VarP and VarM
-	THArgCheck((THTensor_(nElement)(weight) == THTensor_(nElement)(VarP)) && 
-		         (THTensor_(nElement)(weight) == THTensor_(nElement)(VarM)), 102,
-			        "nElement of weight and VarP / VarM should be the same, but weight: %d VarP: %d, VarM: %d", 
-		          THTensor_(nElement)(weight), 
-		          THTensor_(nElement)(VarP),
-		          THTensor_(nElement)(VarM));
+  THArgCheck((THTensor_(nElement)(weight) == THTensor_(nElement)(VarP)) && 
+	     (THTensor_(nElement)(weight) == THTensor_(nElement)(VarM)), 102,
+	     "nElement of weight and VarP / VarM should be the same, but weight: %d VarP: %d, VarM: %d", 
+	      THTensor_(nElement)(weight), 
+	      THTensor_(nElement)(VarP),
+	      THTensor_(nElement)(VarM));
   
   
   int ndim = input->nDimension;
@@ -86,7 +86,7 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
   long outputWidth,
   long outputHeight)
 {
-  THTensor *output3d;
+  THTensor *output2d;
   
   // Lowering convolution
   THNN_(unfolded_copy)(finput, input, kW, kH, dW, dH, padW, padH,
@@ -94,7 +94,7 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
                        outputWidth, outputHeight);
   
   // Initialize output
-  output3d = THTensor_(newWithStorage2d)(output->storage, output->storageOffset,
+  output2d = THTensor_(newWithStorage2d)(output->storage, output->storageOffset,
                                          nOutputPlane, -1,
                                          outputHeight*outputWidth, -1);
   
@@ -138,7 +138,7 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
     }
   }
   
-  // free output3d
+  // free output2d
   THTensor_(free)(output2d);
 }
 
@@ -148,6 +148,8 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
   THTensor *output,
   THTensor *weight,
   THTensor *finput,
+  THTensor *VarP,
+  THTensor *VarM,
   int accumN,
   int kW, int kH,
   int dW, int dH,
@@ -186,10 +188,11 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
   // do the computation
   if (input->nDimension == 3) {
     THTensor_(resize2d)(finput, kW*kH*nInputPlane, outputHeight*outputWidth);
-    THTensor_(resize4d)(output, nOutputPlane, outputHeight, outputWidth, nPsum);
+    THTensor_(resize3d)(output, nOutputPlane, outputHeight, outputWidth);
     
     THNN_(CrossbarSpatialConvolution_updateOutput_frame)
-      (input, output, weight, finput, accumN, nPsum,
+      (input, output, weight, finput, 
+       VarP, VarM, accumN, nPsum,
        kW, kH, dW, dH, padW, padH,
        nInputPlane, inputWidth, inputHeight,
        nOutputPlane, outputWidth, outputHeight);
@@ -199,7 +202,7 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
     long t;
     
     THTensor_(resize3d)(finput, T, kW*kH*nInputPlane, outputHeight*outputWidth);
-    THTensor_(resize5d)(output, T, nOutputPlane, outputHeight, outputWidth, nPsum);
+    THTensor_(resize4d)(output, T, nOutputPlane, outputHeight, outputWidth);
     
 #pragma omp parallel for private(t)
     for (t = 0; t < T; t++) {
@@ -208,7 +211,8 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
       THTensor *finput_t = THTensor_(newSelect)(finput, 0, t);
       
       THNN_(CrossbarSpatialConvolution_updateOutput_frame)
-      (input_t, output_t, weight, finput_t, accumN, nPsum,
+      (input_t, output_t, weight, finput_t, 
+       VarP, VarM, accumN, nPsum,
        kW, kH, dW, dH, padW, padH,
        nInputPlane, inputWidth, inputHeight,
        nOutputPlane, outputWidth, outputHeight);

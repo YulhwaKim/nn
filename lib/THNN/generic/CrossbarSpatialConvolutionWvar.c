@@ -127,11 +127,13 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
           // accumulation
           psum += temp;
         }
+	printf("psum before quantize: %.1f ", psum);
         // quantize psum
         psum = (accumN == 1)? round(psum) : round(psum/2)*2;
         // clamping
         psum = (psum > accumN)? accumN : psum;
         psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
+	printf("psum after quantize: %.1f\n", psum);
         // update output_temp
         output_temp += psum;
       }

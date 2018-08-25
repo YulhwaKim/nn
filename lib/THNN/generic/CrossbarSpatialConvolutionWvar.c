@@ -121,20 +121,20 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
         for (int n=0; n<accumN; n++) {
           // multiplication
           real temp = finput_real[(k*accumN+n)*nOutSpatial+j] * weight_real[i*nIn+(k*accumN+n)];
-	  printf("input idx: %ld, input: %.1f weight: %.1f temp %.1f ", (k*accumN+n)*nOutSpatial+j, finput_real[(k*accumN+n)*nOutSpatial+j], weight_real[i*nIn+(k*accumN+n)], temp);
+// 	  printf("input idx: %ld, input: %.1f weight: %.1f temp %.1f ", (k*accumN+n)*nOutSpatial+j, finput_real[(k*accumN+n)*nOutSpatial+j], weight_real[i*nIn+(k*accumN+n)], temp);
           // variation modeling
           temp = (temp > 0)? 
                   temp + VarP_real[i*nIn+(k*accumN+n)] : temp + VarM_real[i*nIn+(k*accumN+n)];
           // accumulation
           psum += temp;
         }
-	printf("psum before quantize: %.1f ", psum);
+// 	printf("psum before quantize: %.1f ", psum); // zero padding is problem!!!!
         // quantize psum
         psum = (accumN == 1)? round(psum) : round(psum/2)*2;
         // clamping
         psum = (psum > accumN)? accumN : psum;
         psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
-	printf("psum after quantize: %.1f\n", psum);
+// 	printf("psum after quantize: %.1f\n", psum);
         // update output_temp
         output_temp += psum;
       }

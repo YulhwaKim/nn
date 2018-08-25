@@ -50,5 +50,5 @@ end
 
 function CrossbarLinearWvar:__tostring__()
   return torch.type(self) ..
-      string.format('(%d -> %d)', self.weight:size(2), self.weight:size(1))
+      string.format('(%d -> %d), %d', self.weight:size(2), self.weight:size(1), self.accumN)
 end

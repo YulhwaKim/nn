@@ -224,6 +224,7 @@ require('nn.CrossbarCompute')
 require('nn.VariationModeling')
 require('nn.CrossbarSpatialConvolution')
 require('nn.CrossbarLinearWvar')
+require('nn.CrossbarSpatialConvolutionWvar')
 
 
 return nn

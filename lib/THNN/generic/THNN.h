@@ -1650,4 +1650,18 @@ TH_API void THNN_(CrossbarLinearWvar_updateOutput)(
 	THTensor *VarM,
 	int accumN);
 
+TH_API void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
+  	THNNState *state,
+  	THTensor *input,
+  	THTensor *output,
+  	THTensor *weight,
+  	THTensor *finput,
+  	THTensor *VarP,
+  	THTensor *VarM,
+  	int accumN,
+  	int kW, int kH,
+  	int dW, int dH,
+  	int padW, int padH);
+
+
 #endif

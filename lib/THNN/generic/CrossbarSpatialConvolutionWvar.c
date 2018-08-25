@@ -2,6 +2,8 @@
 #define TH_GENERIC_FILE "generic/CrossbarSpatialConvolutionWvar.c"
 #else
 
+#include <math.h>
+
 static inline void THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)(
   THTensor *input, THTensor *weight, THTensor *VarP, THTensor *VarM,
   int kH, int kW, int dH, int dW, int padH, int padW) {

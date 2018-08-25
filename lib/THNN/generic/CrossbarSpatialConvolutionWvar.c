@@ -53,7 +53,7 @@ static inline void THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)(
 }
 
 // Convert 4D weight into 2D weight
-static THTensor *THNN_(view_weight_Cross2d)(THTensor *weight){
+static THTensor *THNN_(view_weight_CrossWvar2d)(THTensor *weight){
   weight = THTensor_(newContiguous)(weight);
   if (weight->nDimension == 4) {
     long s1 = weight->size[0];
@@ -157,7 +157,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
   int dW, int dH,
   int padW, int padH)
 {
-  weight = THNN_(view_weight_Cross2d)(weight);
+  weight = THNN_(view_weight_CrossWvar2d)(weight);
   
   THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)
     (input, weight, VarP, VarM, kH, kW, dH, dW, padH, padW);

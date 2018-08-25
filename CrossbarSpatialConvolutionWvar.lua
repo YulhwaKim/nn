@@ -1,7 +1,7 @@
 local THNN = require 'nn.THNN'
-local CrossbarSpatialConvolution, parent = torch.class('nn.CrossbarSpatialConvolution', 'nn.Module')
+local CrossbarSpatialConvolutionWvar, parent = torch.class('nn.CrossbarSpatialConvolutionWvar', 'nn.Module')
 
-function CrossbarSpatialConvolution:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, padW, padH, accumN, binarize)
+function CrossbarSpatialConvolutionWvar:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, padW, padH, accumN)
    parent.__init(self)
 
    dW = dW or 1
@@ -18,20 +18,15 @@ function CrossbarSpatialConvolution:__init(nInputPlane, nOutputPlane, kW, kH, dW
    self.padH = padH or self.padW
 
    self.weight = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
-   self.weightB = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
-   self.weightOrg = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
+   self.VarP = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
+   self.VarM = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
    self.accumN = accumN or inputSize
-   
-   self.binarize = binarize or false 
-	if (binarize and type(self.binarize) ~= 'boolean') then
-		error('binarize flag must be boolean')
-	end
    
    self:reset()
 end
 
 
-function CrossbarSpatialConvolution:reset(stdv)
+function CrossbarSpatialConvolutionWvar:reset(stdv)
    if stdv then
       stdv = stdv * math.sqrt(3)
    else
@@ -47,24 +42,9 @@ function CrossbarSpatialConvolution:reset(stdv)
 end
 
 
-function CrossbarSpatialConvolution:binarized()
-	self.weightOrg:copy(self.weight)
-	self.weightB:copy(self.weight):add(1):div(2):clamp(0,1)
-	self.weightB:round():mul(2):add(-1)
-	return  self.weightB
-end
-
-
-function CrossbarSpatialConvolution:updateOutput(input)
-   -- get binary weight
-   if self.binarize == true then
-	self.weightB = self:binarized()
-	self.weight:copy(self.weightB)
-   end
-   
+function CrossbarSpatialConvolutionWvar:updateOutput(input)
    assert(input.THNN, torch.type(input)..'.THNN backend not imported')
    self.finput = self.finput or input.new()
-   self.fgradInput = self.fgradInput or input.new()
    -- backward compatibility
    if self.padding then
       self.padW = self.padding
@@ -72,26 +52,24 @@ function CrossbarSpatialConvolution:updateOutput(input)
       self.padding = nil
    end
    -- update output
-   input.THNN.CrossbarSpatialConvolution_updateOutput(
+   input.THNN.CrossbarSpatialConvolutionWvar_updateOutput(
       input:cdata(),
       self.output:cdata(),
       self.weight:cdata(),
       self.finput:cdata(),
+      self.VarP:cdata(),
+      self.VarM:cdata(),
       self.accumN,
       self.kW, self.kH,
       self.dW, self.dH,
       self.padW, self.padH
    )
-   -- restore original weight
-   if self.binarize == true then
-	self.weight:copy(self.weightOrg);
-   end
    return self.output
 end
 
 
 
-function CrossbarSpatialConvolution:__tostring__()
+function CrossbarSpatialConvolutionWvar:__tostring__()
    local s = string.format('%s(%d -> %d, %dx%d', torch.type(self),
          self.nInputPlane, self.nOutputPlane, self.kW, self.kH)
    if self.dW ~= 1 or self.dH ~= 1 or self.padW ~= 0 or self.padH ~= 0 then

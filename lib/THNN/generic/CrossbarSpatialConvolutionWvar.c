@@ -231,7 +231,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
       
       THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)
       (input_t, output_t, weight, finput_t, 
-       VarP, VarM, accumN, nPsum, padValue
+       VarP, VarM, accumN, nPsum, padValue,
        kW, kH, dW, dH, padW, padH,
        nInputPlane, inputWidth, inputHeight,
        nOutputPlane, outputWidth, outputHeight);

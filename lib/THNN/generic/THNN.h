@@ -1663,5 +1663,21 @@ TH_API void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
   	int dW, int dH,
   	int padW, int padH);
 
+TH_API void THNN_(unfolded_custom_padding_copy)(
+          THTensor *finput,
+          THTensor *input,
+	int padValue,
+          int kW,
+          int kH,
+          int dW,
+          int dH,
+          int padW,
+          int padH,
+          int nInputPlane,
+          int inputWidth,
+          int inputHeight,
+          int outputWidth,
+          int outputHeight);
+
 
 #endif

@@ -93,12 +93,12 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
   
   // Lowering convolution
   printf("padValue: %d\n", padValue);
-  THNN_(unfolded_copy)(finput, input, kW, kH, dW, dH, padW, padH,
-                       nInputPlane, inputWidth, inputHeight,
-                       outputWidth, outputHeight);
-//   THNN_(unfolded_custom_padding_copy)(finput, input, padValue, kW, kH, dW, dH, padW, padH,
+//   THNN_(unfolded_copy)(finput, input, kW, kH, dW, dH, padW, padH,
 //                        nInputPlane, inputWidth, inputHeight,
 //                        outputWidth, outputHeight);
+  THNN_(unfolded_custom_padding_copy)(finput, input, padValue, kW, kH, dW, dH, padW, padH,
+                       nInputPlane, inputWidth, inputHeight,
+                       outputWidth, outputHeight);
   
   // Initialize output
   output2d = THTensor_(newWithStorage2d)(output->storage, output->storageOffset,
@@ -125,6 +125,7 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
         real psum = 0;
         for (int n=0; n<accumN; n++) {
           // multiplication
+	  printf("finput_real : %.1f\n", finput_real[(k*accumN+n)*nOutSpatial+j]);
           real temp = finput_real[(k*accumN+n)*nOutSpatial+j] * weight_real[i*nIn+(k*accumN+n)];
 // 	  printf("input idx: %ld, input: %.1f weight: %.1f temp %.1f ", (k*accumN+n)*nOutSpatial+j, finput_real[(k*accumN+n)*nOutSpatial+j], weight_real[i*nIn+(k*accumN+n)], temp);
           // variation modeling

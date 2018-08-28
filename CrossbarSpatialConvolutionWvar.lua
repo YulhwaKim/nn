@@ -81,5 +81,6 @@ function CrossbarSpatialConvolutionWvar:__tostring__()
      s = s .. ', ' .. self.padW .. ',' .. self.padH
    end
    s = s .. ', ' .. self.accumN
+   s = s .. ', padValue : ' .. self.padValue
    return s .. ')'
 end

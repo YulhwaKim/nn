@@ -188,6 +188,8 @@ void THNN_(unfolded_custom_padding_copy)(
   long k;
   real *input_data = THTensor_(data)(input);
   real *finput_data = THTensor_(data)(finput);
+	
+  real padValue_real = (real)padValue;
 
 #pragma omp parallel for private(k)
   for(k = 0; k < (long)nInputPlane*kH*kW; k++) {
@@ -204,25 +206,25 @@ void THNN_(unfolded_custom_padding_copy)(
       for(y = 0; y < outputHeight; y++) {
         iy = (long)y*dH - padH + kh;
         if (iy < 0 || iy >= inputHeight) {
-          memset(dst+(size_t)y*outputWidth, padValue, sizeof(real)*outputWidth);
+          memset(dst+(size_t)y*outputWidth, padValue_real, sizeof(real)*outputWidth);
         } else {
           if (dW==1){
              ix = 0 - padW + kw;
              lpad = fmaxf(0,padW-kw);
              rpad = fmaxf(0,padW-(kW-kw-1));
              if (outputWidth-rpad-lpad <= 0) {
-                memset(dst+(size_t)y*outputWidth, padValue, sizeof(real)*outputWidth);
+                memset(dst+(size_t)y*outputWidth, padValue_real, sizeof(real)*outputWidth);
              } else {
-                if (lpad > 0) memset(dst+(size_t)y*outputWidth, padValue, sizeof(real)*lpad);
+                if (lpad > 0) memset(dst+(size_t)y*outputWidth, padValue_real, sizeof(real)*lpad);
                 memcpy(dst+(size_t)y*outputWidth+lpad, src+(size_t)iy*inputWidth+ix+lpad, sizeof(real)*(outputWidth-rpad-lpad));
-                if (rpad > 0) memset(dst+(size_t)y*outputWidth + outputWidth - rpad, padValue, sizeof(real)*rpad);
+                if (rpad > 0) memset(dst+(size_t)y*outputWidth + outputWidth - rpad, padValue_real, sizeof(real)*rpad);
              }
           }
           else{
             for (x=0; x<outputWidth; x++){
                ix = (long)x*dW - padW + kw;
                if (ix < 0 || ix >= inputWidth)
-                 memset(dst+(size_t)y*outputWidth+x, padValue, sizeof(real)*1);
+                 memset(dst+(size_t)y*outputWidth+x, padValue_real, sizeof(real)*1);
                else
                  memcpy(dst+(size_t)y*outputWidth+x, src+(size_t)iy*inputWidth+ix, sizeof(real)*(1));
             }

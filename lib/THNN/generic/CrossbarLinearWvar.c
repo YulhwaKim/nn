@@ -72,12 +72,6 @@ void THNN_(CrossbarLinearWvar_updateOutput)(
 						psum = (psum > accumN)? accumN : psum;
 						psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
 					}
-					// old code
-// 					// quantize psum
-// 					psum = (accumN ==1)? round(psum) : round(psum/2)*2;
-// 					// clamping
-// 					psum = (psum > accumN)? accumN : psum;
-// 					psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
 					// update output_temp
 					output_temp += psum;
 				}
@@ -87,5 +81,12 @@ void THNN_(CrossbarLinearWvar_updateOutput)(
 		}
 	}
 }
+
+					// old code for psum quantization
+// 					// quantize psum
+// 					psum = (accumN ==1)? round(psum) : round(psum/2)*2;
+// 					// clamping
+// 					psum = (psum > accumN)? accumN : psum;
+// 					psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
 
 #endif

@@ -20,7 +20,7 @@ function CrossbarSpatialConvolutionWvar:__init(nInputPlane, nOutputPlane, kW, kH
    self.weight = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
    self.VarP = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
    self.VarM = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
-   self.accumN = accumN or inputSize
+   self.accumN = accumN or nInputPlane*kH*kW
    self.padValue = padValue or 0
    
    self:reset()

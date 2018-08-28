@@ -4,6 +4,87 @@
 
 #include <math.h>
 
+static void THNN_(unfolded_custom_padding_copy)(
+          THTensor *finput,
+          THTensor *input,
+	  int padValue,
+          int kW,
+          int kH,
+          int dW,
+          int dH,
+          int padW,
+          int padH,
+          int nInputPlane,
+          int inputWidth,
+          int inputHeight,
+          int outputWidth,
+          int outputHeight)
+{
+  // This function assumes that
+  // kH*kW does not overflow an int
+  // nInputPlane*kH*kW does not overflow a long
+  // outputHeight*dH does not overflow a long
+  // outputWidth*dW does not overflow a long
+
+  long k;
+  real *input_data = THTensor_(data)(input);
+  real *finput_data = THTensor_(data)(finput);
+
+#pragma omp parallel for private(k)
+  for(k = 0; k < (long)nInputPlane*kH*kW; k++) {
+    long nip = k / (kH*kW);
+    long rest = k % (kH*kW);
+    long kh = rest / kW;
+    long kw = rest % kW;
+    int x, y;
+    long ix, iy;
+    real *dst = finput_data + nip*((size_t)kH*kW*outputHeight*outputWidth) + kh*((size_t)kW*outputHeight*outputWidth) + kw*((size_t)outputHeight*outputWidth);
+    real *src = input_data + nip*((size_t)inputHeight*inputWidth);
+    if (padW > 0 || padH > 0) {
+      long lpad,rpad;
+      for(y = 0; y < outputHeight; y++) {
+        iy = (long)y*dH - padH + kh;
+        if (iy < 0 || iy >= inputHeight) {
+          memset(dst+(size_t)y*outputWidth, padValue, sizeof(real)*outputWidth);
+        } else {
+          if (dW==1){
+             ix = 0 - padW + kw;
+             lpad = fmaxf(0,padW-kw);
+             rpad = fmaxf(0,padW-(kW-kw-1));
+             if (outputWidth-rpad-lpad <= 0) {
+                memset(dst+(size_t)y*outputWidth, padValue, sizeof(real)*outputWidth);
+             } else {
+                if (lpad > 0) memset(dst+(size_t)y*outputWidth, padValue, sizeof(real)*lpad);
+                memcpy(dst+(size_t)y*outputWidth+lpad, src+(size_t)iy*inputWidth+ix+lpad, sizeof(real)*(outputWidth-rpad-lpad));
+                if (rpad > 0) memset(dst+(size_t)y*outputWidth + outputWidth - rpad, padValue, sizeof(real)*rpad);
+             }
+          }
+          else{
+            for (x=0; x<outputWidth; x++){
+               ix = (long)x*dW - padW + kw;
+               if (ix < 0 || ix >= inputWidth)
+                 memset(dst+(size_t)y*outputWidth+x, padValue, sizeof(real)*1);
+               else
+                 memcpy(dst+(size_t)y*outputWidth+x, src+(size_t)iy*inputWidth+ix, sizeof(real)*(1));
+            }
+          }
+        }
+      }
+    } else {
+      for(y = 0; y < outputHeight; y++) {
+        iy = (long)y*dH + kh;
+        ix = 0 + kw;
+        if (dW == 1)
+           memcpy(dst+(size_t)y*outputWidth, src+(size_t)iy*inputWidth+ix, sizeof(real)*outputWidth);
+        else{
+          for (x=0; x<outputWidth; x++)
+             memcpy(dst+(size_t)y*outputWidth+x, src+(size_t)iy*inputWidth+ix+(long)x*dW, sizeof(real)*(1));
+         }
+      }
+    }
+  }
+}
+
 static inline void THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)(
   THTensor *input, THTensor *weight, THTensor *VarP, THTensor *VarM,
   int kH, int kW, int dH, int dW, int padH, int padW) {
@@ -75,6 +156,7 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
   THTensor *VarM,
   int accumN,
   long nPsum,
+  int padValue,
   int kW,
   int kH,
   int dW,
@@ -91,7 +173,7 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
   THTensor *output2d;
   
   // Lowering convolution
-  THNN_(unfolded_copy)(finput, input, kW, kH, dW, dH, padW, padH,
+  THNN_(unfolded_custom_padding_copy)(finput, input, padValue, kW, kH, dW, dH, padW, padH,
                        nInputPlane, inputWidth, inputHeight,
                        outputWidth, outputHeight);
   
@@ -168,6 +250,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
   THTensor *VarP,
   THTensor *VarM,
   int accumN,
+  int padValue
   int kW, int kH,
   int dW, int dH,
   int padW, int padH)
@@ -209,7 +292,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
     
     THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)
       (input, output, weight, finput, 
-       VarP, VarM, accumN, nPsum,
+       VarP, VarM, accumN, nPsum, padValue
        kW, kH, dW, dH, padW, padH,
        nInputPlane, inputWidth, inputHeight,
        nOutputPlane, outputWidth, outputHeight);
@@ -229,7 +312,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
       
       THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)
       (input_t, output_t, weight, finput_t, 
-       VarP, VarM, accumN, nPsum,
+       VarP, VarM, accumN, nPsum, padValue
        kW, kH, dW, dH, padW, padH,
        nInputPlane, inputWidth, inputHeight,
        nOutputPlane, outputWidth, outputHeight);

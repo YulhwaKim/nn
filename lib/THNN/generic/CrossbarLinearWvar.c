@@ -62,13 +62,22 @@ void THNN_(CrossbarLinearWvar_updateOutput)(
 						// accumulation
 						psum += temp;
 					}
-// 					printf("psum before quantize: %.1f ", psum);
-					// quantize psum
-					psum = (accumN ==1)? round(psum) : round(psum/2)*2;
-					// clamping
-					psum = (psum > accumN)? accumN : psum;
-					psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
-// 					printf("psum after quantize: %.1f\n", psum);
+					//quantize psum
+					if (accumN == 1) {
+						psum = (psum >= 0)? 1 : -1;
+					}
+					else {
+						psum = round(psum/2)*2;
+						//clamping
+						psum = (psum > accumN)? accumN : psum;
+						psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
+					}
+					// old code
+// 					// quantize psum
+// 					psum = (accumN ==1)? round(psum) : round(psum/2)*2;
+// 					// clamping
+// 					psum = (psum > accumN)? accumN : psum;
+// 					psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
 					// update output_temp
 					output_temp += psum;
 				}

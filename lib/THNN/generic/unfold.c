@@ -240,7 +240,8 @@ void THNN_(unfolded_custom_padding_copy)(
             for (x=0; x<outputWidth; x++){
                ix = (long)x*dW - padW + kw;
                if (ix < 0 || ix >= inputWidth)
-                 memset(dst+(size_t)y*outputWidth+x, padValue_real, sizeof(real)*1);
+//                  memset(dst+(size_t)y*outputWidth+x, padValue_real, sizeof(real)*1);
+		    dst[y*outputWidth+x] = padValue_real;
                else
                  memcpy(dst+(size_t)y*outputWidth+x, src+(size_t)iy*inputWidth+ix, sizeof(real)*(1));
             }

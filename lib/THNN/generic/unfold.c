@@ -208,7 +208,7 @@ void THNN_(unfolded_custom_padding_copy)(
         if (iy < 0 || iy >= inputHeight) {
 //           memset(dst+(size_t)y*outputWidth, padValue_real, sizeof(real)*outputWidth);
 		for (int memset_i=0; memset_i<outputWidth; memset_i++) {
-			dst[y*outputWidth+memset_i] = padValue_real;
+			dst[y*outputWidth + memset_i] = padValue_real;
 		}
         } else {
           if (dW==1){
@@ -218,20 +218,20 @@ void THNN_(unfolded_custom_padding_copy)(
              if (outputWidth-rpad-lpad <= 0) {
 //                 memset(dst+(size_t)y*outputWidth, padValue_real, sizeof(real)*outputWidth);
 		for (int memset_i=0; memset_i<outputWidth; memset_i++) {
-			dst[y*outputWidth+memset_i] = padValue_real;
+			dst[y*outputWidth + memset_i] = padValue_real;
 		}
              } else {
                 if (lpad > 0) {
 			// memset(dst+(size_t)y*outputWidth, padValue_real, sizeof(real)*lpad);
 			for (int memset_i=0; memset_i<lpad; memset_i++) {
-				dst[y*outputWidth+memset_i] = padValue_real;
+				dst[y*outputWidth + memset_i] = padValue_real;
 			}
 		}
                 memcpy(dst+(size_t)y*outputWidth+lpad, src+(size_t)iy*inputWidth+ix+lpad, sizeof(real)*(outputWidth-rpad-lpad));
                 if (rpad > 0) {
 			// memset(dst+(size_t)y*outputWidth + outputWidth - rpad, padValue_real, sizeof(real)*rpad);
 			for (int memset_i=0; memset_i<rpad; memset_i++) {
-				dst[y*outputWidth+memset_i] = padValue_real;
+				dst[y*outputWidth + outputWidth - rpad + memset_i] = padValue_real;
 			}
 		}
              }
@@ -241,7 +241,7 @@ void THNN_(unfolded_custom_padding_copy)(
                ix = (long)x*dW - padW + kw;
                if (ix < 0 || ix >= inputWidth)
 //                  memset(dst+(size_t)y*outputWidth+x, padValue_real, sizeof(real)*1);
-		    dst[y*outputWidth+x] = padValue_real;
+		    dst[y*outputWidth + x] = padValue_real;
                else
                  memcpy(dst+(size_t)y*outputWidth+x, src+(size_t)iy*inputWidth+ix, sizeof(real)*(1));
             }

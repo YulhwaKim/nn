@@ -61,6 +61,7 @@ function CrossbarSpatialConvolutionWvar:updateOutput(input)
       self.VarP:cdata(),
       self.VarM:cdata(),
       self.accumN,
+      self.padValue,
       self.kW, self.kH,
       self.dW, self.dH,
       self.padW, self.padH

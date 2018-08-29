@@ -72,6 +72,7 @@ static void THNN_(SpatialConvolutionMMCustomPadding_updateOutput_frame)(
           THTensor *weight,
           THTensor *bias,
           THTensor *finput,
+	  int padValue,
           int kW,
           int kH,
           int dW,
@@ -88,9 +89,12 @@ static void THNN_(SpatialConvolutionMMCustomPadding_updateOutput_frame)(
   long i;
   THTensor *output2d;
 
-  THNN_(unfolded_copy)(finput, input, kW, kH, dW, dH, padW, padH,
-		       nInputPlane, inputWidth, inputHeight,
-		       outputWidth, outputHeight);
+//   THNN_(unfolded_copy)(finput, input, kW, kH, dW, dH, padW, padH,
+// 		       nInputPlane, inputWidth, inputHeight,
+// 		       outputWidth, outputHeight);
+  THNN_(unfolded_custom_padding_copy)(finput, input, padValue, kW, kH, dW, dH, padW, padH,
+                       nInputPlane, inputWidth, inputHeight,
+                       outputWidth, outputHeight);
 
   output2d = THTensor_(newWithStorage2d)(output->storage, output->storageOffset,
                                          nOutputPlane, -1,
@@ -117,6 +121,7 @@ void THNN_(SpatialConvolutionMMCustomPadding_updateOutput)(
           THTensor *bias,
           THTensor *finput,
           THTensor *fgradInput,
+	  int padValue,
           int kW,
           int kH,
           int dW,
@@ -175,7 +180,7 @@ void THNN_(SpatialConvolutionMMCustomPadding_updateOutput)(
       THTensor *finput_t = THTensor_(newSelect)(finput, 0, t);
 
       THNN_(SpatialConvolutionMMCustomPadding_updateOutput_frame)
-	(input_t, output_t, weight, bias, finput_t,
+	(input_t, output_t, weight, bias, finput_t, padValue,
 	 kW, kH, dW, dH, padW, padH,
 	 nInputPlane, inputWidth, inputHeight,
 	 nOutputPlane, outputWidth, outputHeight);

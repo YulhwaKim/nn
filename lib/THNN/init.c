@@ -304,3 +304,6 @@
 
 #include "generic/CrossbarSpatialConvolutionWvar.c"
 #include "THGenerateFloatTypes.h"
+
+#include "generic/SpatialConvolutionMMCustomPadding.c"
+#include "THGenerateFloatTypes.h"

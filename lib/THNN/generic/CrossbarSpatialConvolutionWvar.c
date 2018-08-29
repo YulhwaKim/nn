@@ -92,7 +92,7 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
   THTensor *output2d;
   
   // Lowering convolution
-  printf("padValue: %d\n", padValue);
+//   printf("padValue: %d\n", padValue);
 //   THNN_(unfolded_copy)(finput, input, kW, kH, dW, dH, padW, padH,
 //                        nInputPlane, inputWidth, inputHeight,
 //                        outputWidth, outputHeight);

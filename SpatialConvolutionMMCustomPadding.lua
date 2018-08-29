@@ -1,7 +1,7 @@
 local THNN = require 'nn.THNN'
-local SpatialConvolutionMM, parent = torch.class('nn.SpatialConvolutionMM', 'nn.Module')
+local SpatialConvolutionMMCustomPadding, parent = torch.class('nn.SpatialConvolutionMMCustomPadding', 'nn.Module')
 
-function SpatialConvolutionMM:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, padW, padH)
+function SpatialConvolutionMMCustomPadding:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, padW, padH)
    parent.__init(self)
 
    dW = dW or 1
@@ -25,13 +25,13 @@ function SpatialConvolutionMM:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, 
    self:reset()
 end
 
-function SpatialConvolutionMM:noBias()
+function SpatialConvolutionMMCustomPadding:noBias()
    self.bias = nil
    self.gradBias = nil
    return self
 end
 
-function SpatialConvolutionMM:reset(stdv)
+function SpatialConvolutionMMCustomPadding:reset(stdv)
    if stdv then
       stdv = stdv * math.sqrt(3)
    else
@@ -50,7 +50,7 @@ function SpatialConvolutionMM:reset(stdv)
    end
 end
 
-function SpatialConvolutionMM:updateOutput(input)
+function SpatialConvolutionMMCustomPadding:updateOutput(input)
    assert(input.THNN, torch.type(input)..'.THNN backend not imported')
    self.finput = self.finput or input.new()
    self.fgradInput = self.fgradInput or input.new()
@@ -60,7 +60,7 @@ function SpatialConvolutionMM:updateOutput(input)
       self.padH = self.padding
       self.padding = nil
    end
-   input.THNN.SpatialConvolutionMM_updateOutput(
+   input.THNN.SpatialConvolutionMMCustomPadding_updateOutput(
       input:cdata(),
       self.output:cdata(),
       self.weight:cdata(),
@@ -74,10 +74,10 @@ function SpatialConvolutionMM:updateOutput(input)
    return self.output
 end
 
-function SpatialConvolutionMM:updateGradInput(input, gradOutput)
+function SpatialConvolutionMMCustomPadding:updateGradInput(input, gradOutput)
    assert(input.THNN, torch.type(input)..'.THNN backend not imported')
    if self.gradInput then
-      input.THNN.SpatialConvolutionMM_updateGradInput(
+      input.THNN.SpatialConvolutionMMCustomPadding_updateGradInput(
          input:cdata(),
          gradOutput:cdata(),
          self.gradInput:cdata(),
@@ -92,11 +92,11 @@ function SpatialConvolutionMM:updateGradInput(input, gradOutput)
    end
 end
 
-function SpatialConvolutionMM:accGradParameters(input, gradOutput, scale)
+function SpatialConvolutionMMCustomPadding:accGradParameters(input, gradOutput, scale)
    assert(input.THNN, torch.type(input)..'.THNN backend not imported')
    scale = scale or 1
    assert((self.bias and self.gradBias) or (self.bias == nil and self.gradBias == nil))
-   input.THNN.SpatialConvolutionMM_accGradParameters(
+   input.THNN.SpatialConvolutionMMCustomPadding_accGradParameters(
       input:cdata(),
       gradOutput:cdata(),
       self.gradWeight:cdata(),
@@ -110,13 +110,13 @@ function SpatialConvolutionMM:accGradParameters(input, gradOutput, scale)
    )
 end
 
-function SpatialConvolutionMM:type(type,tensorCache)
+function SpatialConvolutionMMCustomPadding:type(type,tensorCache)
    self.finput = self.finput and torch.Tensor()
    self.fgradInput = self.fgradInput and torch.Tensor()
    return parent.type(self,type,tensorCache)
 end
 
-function SpatialConvolutionMM:__tostring__()
+function SpatialConvolutionMMCustomPadding:__tostring__()
    local s = string.format('%s(%d -> %d, %dx%d', torch.type(self),
          self.nInputPlane, self.nOutputPlane, self.kW, self.kH)
    if self.dW ~= 1 or self.dH ~= 1 or self.padW ~= 0 or self.padH ~= 0 then
@@ -132,7 +132,7 @@ function SpatialConvolutionMM:__tostring__()
    end
 end
 
-function SpatialConvolutionMM:clearState()
+function SpatialConvolutionMMCustomPadding:clearState()
    nn.utils.clear(self, 'finput', 'fgradInput', '_input', '_gradOutput')
    return parent.clearState(self)
 end

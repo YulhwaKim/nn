@@ -1,7 +1,7 @@
 local THNN = require 'nn.THNN'
 local SpatialConvolutionMMCustomPadding, parent = torch.class('nn.SpatialConvolutionMMCustomPadding', 'nn.Module')
 
-function SpatialConvolutionMMCustomPadding:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, padW, padH)
+function SpatialConvolutionMMCustomPadding:__init(nInputPlane, nOutputPlane, kW, kH, dW, dH, padW, padH, padValue)
    parent.__init(self)
 
    dW = dW or 1
@@ -21,6 +21,8 @@ function SpatialConvolutionMMCustomPadding:__init(nInputPlane, nOutputPlane, kW,
    self.bias = torch.Tensor(nOutputPlane)
    self.gradWeight = torch.Tensor(nOutputPlane, nInputPlane*kH*kW)
    self.gradBias = torch.Tensor(nOutputPlane)
+   
+   self.padValue = padValue or 0
 
    self:reset()
 end
@@ -67,6 +69,7 @@ function SpatialConvolutionMMCustomPadding:updateOutput(input)
       THNN.optionalTensor(self.bias),
       self.finput:cdata(),
       self.fgradInput:cdata(),
+      self.padValue,
       self.kW, self.kH,
       self.dW, self.dH,
       self.padW, self.padH
@@ -103,6 +106,7 @@ function SpatialConvolutionMMCustomPadding:accGradParameters(input, gradOutput, 
       THNN.optionalTensor(self.gradBias),
       self.finput:cdata(),
       self.fgradInput:cdata(),
+      self.padValue,
       self.kW, self.kH,
       self.dW, self.dH,
       self.padW, self.padH,
@@ -125,6 +129,7 @@ function SpatialConvolutionMMCustomPadding:__tostring__()
    if (self.padW or self.padH) and (self.padW ~= 0 or self.padH ~= 0) then
      s = s .. ', ' .. self.padW .. ',' .. self.padH
    end
+   s = s .. ', padValue : ' .. self.padValue
    if self.bias then
       return s .. ')'
    else

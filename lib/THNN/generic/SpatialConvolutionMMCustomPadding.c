@@ -159,7 +159,7 @@ void THNN_(SpatialConvolutionMMCustomPadding_updateOutput)(
     THTensor_(resize3d)(output, nOutputPlane, outputHeight, outputWidth);
 
     THNN_(SpatialConvolutionMMCustomPadding_updateOutput_frame)
-      (input, output, weight, bias, finput,
+      (input, output, weight, bias, finput, padValue
        kW, kH, dW, dH, padW, padH,
        nInputPlane, inputWidth, inputHeight,
        nOutputPlane, outputWidth, outputHeight);

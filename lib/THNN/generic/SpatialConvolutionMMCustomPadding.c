@@ -1,8 +1,8 @@
 #ifndef TH_GENERIC_FILE
-#define TH_GENERIC_FILE "generic/SpatialConvolutionMM.c"
+#define TH_GENERIC_FILE "generic/SpatialConvolutionMMCustomPadding.c"
 #else
 
-static inline void THNN_(SpatialConvolutionMM_shapeCheck)(
+static inline void THNN_(SpatialConvolutionMMCustomPadding_shapeCheck)(
 	THTensor *input, THTensor *gradOutput,
 	THTensor *weight, THTensor *bias,
 	int kH, int kW, int dH, int dW, int padH, int padW) {
@@ -66,7 +66,7 @@ static THTensor* THNN_(view_weight_MM2d)(THTensor *weight) {
   return weight;
 }
 
-static void THNN_(SpatialConvolutionMM_updateOutput_frame)(
+static void THNN_(SpatialConvolutionMMCustomPadding_updateOutput_frame)(
           THTensor *input,
           THTensor *output,
           THTensor *weight,
@@ -109,7 +109,7 @@ static void THNN_(SpatialConvolutionMM_updateOutput_frame)(
   THTensor_(free)(output2d);
 }
 
-void THNN_(SpatialConvolutionMM_updateOutput)(
+void THNN_(SpatialConvolutionMMCustomPadding_updateOutput)(
           THNNState *state,
           THTensor *input,
           THTensor *output,
@@ -126,7 +126,7 @@ void THNN_(SpatialConvolutionMM_updateOutput)(
 {
   weight = THNN_(view_weight_MM2d)(weight);
 
-  THNN_(SpatialConvolutionMM_shapeCheck)
+  THNN_(SpatialConvolutionMMCustomPadding_shapeCheck)
     (input, NULL, weight, bias, kH, kW, dH, dW, padH, padW);
 
   input = THTensor_(newContiguous)(input);
@@ -153,7 +153,7 @@ void THNN_(SpatialConvolutionMM_updateOutput)(
     THTensor_(resize2d)(finput, kW*kH*nInputPlane, outputHeight*outputWidth);
     THTensor_(resize3d)(output, nOutputPlane, outputHeight, outputWidth);
 
-    THNN_(SpatialConvolutionMM_updateOutput_frame)
+    THNN_(SpatialConvolutionMMCustomPadding_updateOutput_frame)
       (input, output, weight, bias, finput,
        kW, kH, dW, dH, padW, padH,
        nInputPlane, inputWidth, inputHeight,
@@ -174,7 +174,7 @@ void THNN_(SpatialConvolutionMM_updateOutput)(
       THTensor *output_t = THTensor_(newSelect)(output, 0, t);
       THTensor *finput_t = THTensor_(newSelect)(finput, 0, t);
 
-      THNN_(SpatialConvolutionMM_updateOutput_frame)
+      THNN_(SpatialConvolutionMMCustomPadding_updateOutput_frame)
 	(input_t, output_t, weight, bias, finput_t,
 	 kW, kH, dW, dH, padW, padH,
 	 nInputPlane, inputWidth, inputHeight,
@@ -190,7 +190,7 @@ void THNN_(SpatialConvolutionMM_updateOutput)(
   THTensor_(free)(weight);
 }
 
-static void THNN_(SpatialConvolutionMM_updateGradInput_frame)(
+static void THNN_(SpatialConvolutionMMCustomPadding_updateGradInput_frame)(
           THTensor *gradInput,
           THTensor *gradOutput,
           THTensor *weight,
@@ -217,7 +217,7 @@ static void THNN_(SpatialConvolutionMM_updateGradInput_frame)(
 		      gradOutput->size[2], gradOutput->size[1]);
 }
 
-void THNN_(SpatialConvolutionMM_updateGradInput)(
+void THNN_(SpatialConvolutionMMCustomPadding_updateGradInput)(
           THNNState *state,
           THTensor *input,
           THTensor *gradOutput,
@@ -234,7 +234,7 @@ void THNN_(SpatialConvolutionMM_updateGradInput)(
 {
   weight = THNN_(view_weight_MM2d)(weight);
 
-  THNN_(SpatialConvolutionMM_shapeCheck)
+  THNN_(SpatialConvolutionMMCustomPadding_shapeCheck)
     (input, gradOutput, weight, NULL, kH, kW, dH, dW, padH, padW);
 
   input = THTensor_(newContiguous)(input);
@@ -252,7 +252,7 @@ void THNN_(SpatialConvolutionMM_updateGradInput)(
 
   if(input->nDimension == 3)
   {
-    THNN_(SpatialConvolutionMM_updateGradInput_frame)(gradInput, gradOutput,
+    THNN_(SpatialConvolutionMMCustomPadding_updateGradInput_frame)(gradInput, gradOutput,
 						      tweight, fgradInput,
 						      kW, kH, dW, dH, padW, padH);
   }
@@ -268,7 +268,7 @@ void THNN_(SpatialConvolutionMM_updateGradInput)(
       THTensor *gradOutput_t = THTensor_(newSelect)(gradOutput, 0, t);
       THTensor *fgradInput_t = THTensor_(newSelect)(fgradInput, 0, t);
 
-      THNN_(SpatialConvolutionMM_updateGradInput_frame)(gradInput_t, gradOutput_t,
+      THNN_(SpatialConvolutionMMCustomPadding_updateGradInput_frame)(gradInput_t, gradOutput_t,
 							tweight, fgradInput_t,
 							kW, kH, dW, dH, padW, padH);
 
@@ -284,7 +284,7 @@ void THNN_(SpatialConvolutionMM_updateGradInput)(
   THTensor_(free)(weight);
 }
 
-static void THNN_(SpatialConvolutionMM_accGradParameters_frame)(
+static void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters_frame)(
           THTensor *gradOutput,
           THTensor *gradWeight,
           THTensor *gradBias,
@@ -317,7 +317,7 @@ static void THNN_(SpatialConvolutionMM_accGradParameters_frame)(
   THTensor_(free)(gradOutput2d);
 }
 
-void THNN_(SpatialConvolutionMM_accGradParameters)(
+void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters)(
           THNNState *state,
           THTensor *input,
           THTensor *gradOutput,
@@ -340,7 +340,7 @@ void THNN_(SpatialConvolutionMM_accGradParameters)(
   real scale = TH_CONVERT_ACCREAL_TO_REAL(scale_);
   gradWeight = THNN_(view_weight_MM2d)(gradWeight);
 
-  THNN_(SpatialConvolutionMM_shapeCheck)
+  THNN_(SpatialConvolutionMMCustomPadding_shapeCheck)
     (input, gradOutput, gradWeight, gradBias, kH, kW, dH, dW, padH, padW);
 
   input = THTensor_(newContiguous)(input);
@@ -348,7 +348,7 @@ void THNN_(SpatialConvolutionMM_accGradParameters)(
 
   if(input->nDimension == 3)
   {
-    THNN_(SpatialConvolutionMM_accGradParameters_frame)(gradOutput, gradWeight,
+    THNN_(SpatialConvolutionMMCustomPadding_accGradParameters_frame)(gradOutput, gradWeight,
 							gradBias, finput, scale);
   }
   else
@@ -361,7 +361,7 @@ void THNN_(SpatialConvolutionMM_accGradParameters)(
       THTensor *gradOutput_t = THTensor_(newSelect)(gradOutput, 0, t);
       THTensor *finput_t = THTensor_(newSelect)(finput, 0, t);
 
-      THNN_(SpatialConvolutionMM_accGradParameters_frame)(gradOutput_t, gradWeight,
+      THNN_(SpatialConvolutionMMCustomPadding_accGradParameters_frame)(gradOutput_t, gradWeight,
 							  gradBias, finput_t, scale);
 
       THTensor_(free)(gradOutput_t);

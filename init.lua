@@ -225,6 +225,7 @@ require('nn.VariationModeling')
 require('nn.CrossbarSpatialConvolution')
 require('nn.CrossbarLinearWvar')
 require('nn.CrossbarSpatialConvolutionWvar')
+require('nn.SpatialConvolutionMMCustomPadding')
 
 
 return nn

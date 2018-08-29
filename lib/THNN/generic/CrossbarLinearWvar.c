@@ -57,7 +57,7 @@ void THNN_(CrossbarLinearWvar_updateOutput)(
 						// multiplication
 						real temp = input_real[i*nIn+(k*accumN+n)] * weight_real[j*nIn+(k*accumN+n)];
 						// variation modeling
-						temp = (temp > 0)? 
+						temp = (temp >= 0)? 
 							temp + VarP_real[j*nIn+(k*accumN+n)] : temp + VarM_real[j*nIn+(k*accumN+n)];
 						// accumulation
 						psum += temp;

@@ -203,7 +203,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
   long nOutputPlane = weight->size[0];
   long outputHeight = (inputHeight + 2*padH -kH) / dH + 1;
   long outputWidth = (inputWidth + 2*padW - kW) / dW + 1;
-  long nPsum = weight->size[1] / accumN;  
+  long nPsum = ceil(1.0 * weight->size[1] / accumN);  
   //Check if nPsum is valid
 //   THArgCheck(nPsum > 0 && weight->size[1] == nPsum * accumN, 101,
 //             "Number of input per convolution should be divisible by accumN, but we got number of input: %ld, accumN: %d, nPsum: %ld",

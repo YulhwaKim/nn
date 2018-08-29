@@ -129,7 +129,7 @@ static void THNN_(CrossbarSpatialConvolutionWvar_updateOutput_frame)(
           real temp = finput_real[(k*accumN+n)*nOutSpatial+j] * weight_real[i*nIn+(k*accumN+n)];
 // 	  printf("input idx: %ld, input: %.1f weight: %.1f temp %.1f ", (k*accumN+n)*nOutSpatial+j, finput_real[(k*accumN+n)*nOutSpatial+j], weight_real[i*nIn+(k*accumN+n)], temp);
           // variation modeling
-          temp = (temp > 0)? 
+          temp = (temp >= 0)? 
                   temp + VarP_real[i*nIn+(k*accumN+n)] : temp + VarM_real[i*nIn+(k*accumN+n)];
           // accumulation
           psum += temp;

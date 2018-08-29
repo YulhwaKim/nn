@@ -330,6 +330,7 @@ void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters)(
           THTensor *gradBias,
           THTensor *finput,
           THTensor *fgradInput,
+	  int padValue,
           int kW,
           int kH,
           int dW,

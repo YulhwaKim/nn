@@ -1680,5 +1680,53 @@ TH_API void THNN_(unfolded_custom_padding_copy)(
           int outputWidth,
           int outputHeight);
 
+TH_API void THNN_(SpatialConvolutionMMCustomPadding_updateOutput)(
+          THNNState *state,
+          THTensor *input,
+          THTensor *output,
+          THTensor *weight,
+          THTensor *bias,
+          THTensor *finput,
+          THTensor *fgradInput,
+	  int padValue,
+          int kW,
+          int kH,
+          int dW,
+          int dH,
+          int padW,
+          int padH);
+
+TH_API void THNN_(SpatialConvolutionMMCustomPadding_updateGradInput)(
+          THNNState *state,
+          THTensor *input,
+          THTensor *gradOutput,
+          THTensor *gradInput,
+          THTensor *weight,
+          THTensor *finput,
+          THTensor *fgradInput,
+          int kW,
+          int kH,
+          int dW,
+          int dH,
+          int padW,
+          int padH);
+
+TH_API void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters)(
+          THNNState *state,
+          THTensor *input,
+          THTensor *gradOutput,
+          THTensor *gradWeight,
+          THTensor *gradBias,
+          THTensor *finput,
+          THTensor *fgradInput,
+	  int padValue,
+          int kW,
+          int kH,
+          int dW,
+          int dH,
+          int padW,
+          int padH,
+          accreal scale_);
+
 
 #endif
